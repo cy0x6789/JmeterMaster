@@ -1,0 +1,292 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-chart-bar me-2"></i>Test Report</h2>
+                {% if report %}
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/export_report/{{ report.test_id }}/csv">CSV</a></li>
+                        <li><a class="dropdown-item" href="/export_report/{{ report.test_id }}/json">JSON</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>{{ error }}
+                </div>
+                {% elif report %}
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5>Test Configuration</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th>Target URL</th>
+                                            <td>{{ report.test_config.target_url }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>HTTP Method</th>
+                                            <td>{{ report.test_config.http_method }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Number of Requests</th>
+                                            <td>{{ report.test_config.num_requests }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Concurrency</th>
+                                            <td>{{ report.test_config.concurrency }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Timeout</th>
+                                            <td>{{ report.test_config.timeout }} seconds</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <td>{{ report.timestamp }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5>Summary Results</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th>Total Requests</th>
+                                            <td>{{ report.summary.total_requests }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Successful Requests</th>
+                                            <td>{{ report.summary.successful_requests }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Failed Requests</th>
+                                            <td>{{ report.summary.failed_requests }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Success Rate</th>
+                                            <td>{{ "%.2f"|format(report.summary.success_rate_percent) }}%</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Time</th>
+                                            <td>{{ "%.2f"|format(report.summary.total_time_seconds) }} seconds</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Requests Per Second</th>
+                                            <td>{{ "%.2f"|format(report.summary.requests_per_second) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5>Response Time Statistics</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th>Average Response Time</th>
+                                            <td>{{ "%.2f"|format(report.summary.avg_response_time_ms) }} ms</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Min Response Time</th>
+                                            <td>{{ "%.2f"|format(report.summary.min_response_time_ms) }} ms</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Max Response Time</th>
+                                            <td>{{ "%.2f"|format(report.summary.max_response_time_ms) }} ms</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Median Response Time</th>
+                                            <td>{{ "%.2f"|format(report.summary.median_response_time_ms) }} ms</td>
+                                        </tr>
+                                        <tr>
+                                            <th>90th Percentile</th>
+                                            <td>{{ "%.2f"|format(report.summary.p90_response_time_ms) }} ms</td>
+                                        </tr>
+                                        <tr>
+                                            <th>95th Percentile</th>
+                                            <td>{{ "%.2f"|format(report.summary.p95_response_time_ms) }} ms</td>
+                                        </tr>
+                                        <tr>
+                                            <th>99th Percentile</th>
+                                            <td>{{ "%.2f"|format(report.summary.p99_response_time_ms) }} ms</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5>HTTP Status Codes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height:220px; width:100%">
+                                    <canvas id="statusCodeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Response Time Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height:250px; width:100%">
+                                    <canvas id="responseTimeHistogram"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Requests Over Time</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height:250px; width:100%">
+                                    <canvas id="requestsTimeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>Request Details</h5>
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#requestDetailsCollapse" aria-expanded="false" aria-controls="requestDetailsCollapse">
+                                    <i class="fas fa-plus-circle me-1"></i>Show/Hide
+                                </button>
+                            </div>
+                            <div class="collapse" id="requestDetailsCollapse">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Status</th>
+                                                    <th>Response Time</th>
+                                                    <th>Size</th>
+                                                    <th>Error</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for req in report.requests %}
+                                                <tr {% if req.status_code >= 400 or req.error %}class="table-danger"{% endif %}>
+                                                    <td>{{ req.request_id }}</td>
+                                                    <td>{{ req.status_code }}</td>
+                                                    <td>{{ "%.2f"|format(req.response_time_ms) }} ms</td>
+                                                    <td>{{ req.response_size_bytes }} bytes</td>
+                                                    <td>{{ req.error or "" }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <script>
+                    // Initialize the charts when the page loads
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Prepare the data for status code chart
+                        const statusCodes = [];
+                        const statusCounts = [];
+                        const statusColors = [];
+                        
+                        {% for req in report.status_code_distribution %}
+                        statusCodes.push('{{ req.status_code }}');
+                        statusCounts.push({{ req.count }});
+                        // Color based on status code range
+                        if ({{ req.status_code }} >= 200 && {{ req.status_code }} < 300) {
+                            statusColors.push('#28a745'); // green for 2xx
+                        } else if ({{ req.status_code }} >= 300 && {{ req.status_code }} < 400) {
+                            statusColors.push('#17a2b8'); // blue for 3xx
+                        } else if ({{ req.status_code }} >= 400 && {{ req.status_code }} < 500) {
+                            statusColors.push('#ffc107'); // yellow for 4xx
+                        } else if ({{ req.status_code }} >= 500) {
+                            statusColors.push('#dc3545'); // red for 5xx
+                        } else {
+                            statusColors.push('#6c757d'); // gray for others
+                        }
+                        {% endfor %}
+                        
+                        // Create status code chart
+                        createPieChart('statusCodeChart', 'HTTP Status Codes', statusCodes, statusCounts, statusColors);
+                        
+                        // Prepare data for response time histogram
+                        const histogramLabels = [];
+                        const histogramData = [];
+                        
+                        {% for bin in report.response_time_histogram %}
+                        histogramLabels.push('{{ bin.range }}');
+                        histogramData.push({{ bin.count }});
+                        {% endfor %}
+                        
+                        // Create response time histogram
+                        createBarChart('responseTimeHistogram', 'Response Time Distribution', histogramLabels, histogramData);
+                        
+                        // Prepare data for requests over time
+                        const timeSeriesLabels = [];
+                        const requestsData = [];
+                        const responseTimeData = [];
+                        
+                        {% for point in report.time_series %}
+                        timeSeriesLabels.push('{{ point.time }} sec');
+                        requestsData.push({{ point.requests }});
+                        responseTimeData.push({{ point.avg_response_time }});
+                        {% endfor %}
+                        
+                        // Create requests over time chart
+                        createLineChart('requestsTimeChart', 'Requests Over Time', 
+                                       timeSeriesLabels, requestsData, responseTimeData);
+                    });
+                </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
