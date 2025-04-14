@@ -1,0 +1,93 @@
+/* Custom styles for the Performance Tester application */
+
+/* Set a minimum height for the main container for better layout */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Sticky footer */
+.footer {
+    margin-top: auto;
+}
+
+/* Make chart containers responsive */
+.chart-container {
+    position: relative;
+    margin: auto;
+}
+
+/* Ensure form elements have consistent spacing */
+.form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Style for the test details toggle */
+#requestDetailsCollapse {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Better spacing for the history table */
+#history-table {
+    margin-bottom: 1rem;
+}
+
+/* Make the test configuration card a bit more prominent */
+#test-form {
+    padding: 0.5rem;
+}
+
+/* Style for HTTP method selection */
+#http_method {
+    text-transform: uppercase;
+}
+
+/* Make sure textareas for headers and body have monospace font */
+#headers, #body {
+    font-family: monospace;
+}
+
+/* Add some subtle shadows to cards for better visual hierarchy */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+/* Make card headers more distinct */
+.card-header {
+    background-color: rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+}
+
+/* Style for alerts */
+.alert {
+    margin-bottom: 1rem;
+}
+
+/* Custom styles for the loading modal */
+#loadingModal .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+#loadingModal .progress {
+    margin-top: 1rem;
+}
+
+/* Dark theme adjustment for form controls (for better contrast) */
+.form-control, .form-select {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
